@@ -40,8 +40,32 @@ async def user_put(username):
   resp["status"]="OK"
   return await make_response(jsonify(resp), 200)
 
+@app.delete('/user/<username>')
+async def user_delete(username):
+  resp={}
+  try:
+    os.rmdir(f"{USERDIR}/{username}")
+  except Exception as e:
+    resp["status"]= "KO"
+    resp["error"] = f"Error borrando user dir: {str(e)}"
+    return await make_response(jsonify(resp), 400)
+  resp["status"]="OK"
+  return await make_response(jsonify(resp), 200)
+
+@app.patch('/user/<username>')
+async def user_patch(username):
+  resp={}
+  data=await request.get_json()
+  with open (f"{USERDIR}/{username}/data.json", "r") as ff:
+    user_data=json.loads(ff.read())
+  user_data.update(data)
+  with open (f"{USERDIR}/{username}/data.json", "w") as ff:
+    ff.write(json.dumps(user_data))
+  resp["status"]="OK"
+  return await make_response(jsonify(resp), 200)
+
 if __name__ == "__main__":
     app.run(host='localhost', 
-        port=5000)
+        port=5050)
         
 #app.run()
