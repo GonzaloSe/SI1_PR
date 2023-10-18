@@ -10,9 +10,9 @@ RUN mkdir -p /si1/build/users
 
 EXPOSE 8000
 
-#RUN useradd si1
-#RUN chown -R si1 /si1
-#USER si1
+RUN useradd si1
+RUN chown -R si1 /si1
+USER si1
 
 WORKDIR /si1
 

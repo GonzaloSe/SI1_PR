@@ -1,4 +1,4 @@
-#!/home/gonzalo/venv/si1p1/bin/python3
+#!/home/gonzalo/SI1_PR/p1-v1.0/venv/si1p1/bin/python3
 
 # $Id: rst2odt.py 5839 2009-01-07 19:09:28Z dkuhlman $
 # Author: Dave Kuhlman <dkuhlman@rexx.com>

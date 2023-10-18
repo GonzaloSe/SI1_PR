@@ -1,4 +1,4 @@
-#!/home/gonzalo/venv/si1p1/bin/python3
+#!/home/gonzalo/SI1_PR/p1-v1.0/venv/si1p1/bin/python3
 
 # $Id: rst2latex.py 5905 2009-04-16 12:04:49Z milde $
 # Author: David Goodger <goodger@python.org>

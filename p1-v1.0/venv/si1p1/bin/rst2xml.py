@@ -1,4 +1,4 @@
-#!/home/gonzalo/venv/si1p1/bin/python3
+#!/home/gonzalo/SI1_PR/p1-v1.0/venv/si1p1/bin/python3
 
 # $Id: rst2xml.py 4564 2006-05-21 20:44:42Z wiemann $
 # Author: David Goodger <goodger@python.org>
