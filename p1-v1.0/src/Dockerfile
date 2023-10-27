@@ -1,4 +1,6 @@
-FROM ubuntu
+#FROM ubuntu
+
+FROM localhost:5000/ubuntu
 
 ENV NUMWORKERS 2
 

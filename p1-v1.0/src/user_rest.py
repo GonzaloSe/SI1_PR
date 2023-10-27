@@ -40,6 +40,12 @@ async def user_put(username):
   resp["status"]="OK"
   return await make_response(jsonify(resp), 200)
 
+""" 
+Elimina un usuario dado su nombre
+1. Intenta borrar el directorio del usuario
+2. Si se produce una excepción, devuelve un error
+3. Si no se produce una excepción, devuelve un OK 
+"""
 @app.delete('/user/<username>')
 async def user_delete(username):
   resp={}
@@ -52,6 +58,13 @@ async def user_delete(username):
   resp["status"]="OK"
   return await make_response(jsonify(resp), 200)
 
+""" 
+Actualiza un usuario dado su nombre
+1. Lee el fichero de datos del usuario
+2. Actualiza los datos con los nuevos datos
+3. Escribe el fichero de datos
+4. Devuelve un OK
+"""
 @app.patch('/user/<username>')
 async def user_patch(username):
   resp={}
