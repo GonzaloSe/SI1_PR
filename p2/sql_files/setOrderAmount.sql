@@ -8,13 +8,14 @@ BEGIN
         SELECT SUM(od.price)
         FROM orderdetail AS od
         WHERE od.orderid = o.orderid
-    ),
-    totalamount = (
-        SELECT SUM(od.price) * 1.1
-        FROM orderdetail AS od
-        WHERE od.orderid = o.orderid
     )
-    WHERE netamount IS NULL;
+	WHERE netamount IS NULL;
+	
+	UPDATE orders as o
+    SET totalamount = (
+        o.netamount * 1.1
+    )
+	WHERE totalamount IS NULL;
 
 END;
 $$ LANGUAGE plpgsql;
