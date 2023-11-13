@@ -56,3 +56,11 @@ $$ LANGUAGE plpgsql;
 SELECT * FROM getTopActors('Comedy');
 
 --DROP FUNCTION IF EXISTS getTopActors(character);
+
+
+
+
+
+
+
+
