@@ -6,8 +6,8 @@ ADD CONSTRAINT fk_customer FOREIGN KEY (customerid) REFERENCES customers(custome
 -- Agregar un campo 'balance' en la tabla 'customers'
 -- Aumentar el tamaño del campo 'password' en la tabla 'customers'
 ALTER TABLE customers
-ADD balance NUMERIC(10, 2), -- Ajusta el tipo y la precisión según tus necesidades
-ALTER COLUMN password TYPE VARCHAR(96); -- Ajusta el tipo y la longitud según tus necesidades
+ADD balance NUMERIC(10, 2), 
+ALTER COLUMN password TYPE VARCHAR(96); 
 
 -- Crear una nueva tabla 'ratings' para guardar las valoraciones
 CREATE TABLE ratings (
@@ -32,9 +32,8 @@ CREATE OR REPLACE FUNCTION update_balance_on_order_insert()
 RETURNS TRIGGER AS $$
 BEGIN
   -- Lógica para actualizar el saldo, por ejemplo, deducir el costo de la orden
-  -- Puedes personalizar esta lógica según tus necesidades
   UPDATE customers
-  SET balance = balance - NEW.order_amount
+  SET balance = balance - NEW.totalamount
   WHERE customerid = NEW.customerid;
   RETURN NEW;
 END;
@@ -50,7 +49,6 @@ CREATE OR REPLACE FUNCTION update_ratingmean_on_rating_insert()
 RETURNS TRIGGER AS $$
 BEGIN
   -- Lógica para calcular la valoración media, por ejemplo, promediar las valoraciones de una película
-  -- Puedes personalizar esta lógica según tus necesidades
   UPDATE imdb_movies
   SET ratingmean = (SELECT AVG(rating) FROM ratings WHERE movie_id = NEW.movie_id)
   WHERE movie_id = NEW.movie_id;
@@ -84,4 +82,19 @@ $$ LANGUAGE plpgsql;
 
 
 -- Llamar al procedimiento para inicializar el campo 'balance' de 'customers' con un número aleatorio entre 0 y 200
-SELECT setCustomersBalance(200);
+--SELECT setCustomersBalance(200);
+
+
+
+-- Agregar clave foránea a imdb_moviecountries
+ALTER TABLE imdb_moviecountries
+    ADD FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON DELETE CASCADE;
+
+-- Agregar clave foránea a imdb_moviegenres
+ALTER TABLE imdb_moviegenres
+    ADD FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON DELETE CASCADE;
+
+-- Agregar clave foránea a imdb_movielanguages
+ALTER TABLE imdb_movielanguages
+    ADD FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON DELETE CASCADE;
+
