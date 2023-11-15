@@ -45,3 +45,6 @@ $$ LANGUAGE plpgsql;
 
 -- Llamar al procedimiento almacenado para realizar la carga inicial en la tabla 'orders'
 SELECT setOrderAmountNull();
+
+
+--DROP FUNCTION setOrderAmountNull;

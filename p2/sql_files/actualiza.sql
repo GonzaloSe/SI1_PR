@@ -241,9 +241,9 @@ ALTER TABLE imdb_movielanguages
   
   
 -- Ver el estado antes de la actualización
-SELECT * FROM inventory WHERE prod_id=1;
-SELECT * FROM customers WHERE customerid = 2132;
-UPDATE customers SET balance = 300 WHERE customerid = 2132;
+--SELECT * FROM inventory WHERE prod_id=1;
+--SELECT * FROM customers WHERE customerid = 2132;
+--UPDATE customers SET balance = 300 WHERE customerid = 2132;
 
 --SELECT *
 --FROM orders
