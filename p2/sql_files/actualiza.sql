@@ -1,6 +1,9 @@
 -- Agregar una clave foránea a la tabla 'orders' que referencia la tabla 'customers' y configurarla para actualizar en cascada
 ALTER TABLE orders
 ADD CONSTRAINT fk_customer FOREIGN KEY (customerid) REFERENCES customers(customerid) ON DELETE CASCADE;
+CREATE INDEX idx_orders_orderid ON orders(orderid);
+CREATE INDEX idx_orderdetail_orderid ON orderdetail(orderid);
+
 
 -- Agregar una restricción UNIQUE a la columna 'username' en la tabla 'customers'
 -- Agregar un campo 'balance' en la tabla 'customers'
