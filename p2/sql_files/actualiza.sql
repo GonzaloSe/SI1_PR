@@ -51,25 +51,7 @@ ADD ratingcount INTEGER;
 
 
 
--------------------------------------------------TRIGGERS--------------------------------------------------------------------
--- Crear un trigger para calcular y actualizar la valoración media de una película cuando se inserta una nueva valoración
-CREATE OR REPLACE FUNCTION update_ratingmean_on_rating_insert()
-RETURNS TRIGGER AS $$
-BEGIN
-  -- Lógica para calcular la valoración media, por ejemplo, promediar las valoraciones de una película
-  UPDATE imdb_movies
-  SET ratingmean = (SELECT AVG(rating) FROM ratings WHERE movie_id = NEW.movie_id)
-  WHERE movie_id = NEW.movie_id;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER update_ratingmean_trigger
-AFTER INSERT ON ratings
-FOR EACH ROW
-EXECUTE FUNCTION update_ratingmean_on_rating_insert();
-
-   
+-------------------------------------------------TRIGGERS-------------------------------------------------------------------- 
 --Función para cambios en el pedido
 CREATE OR REPLACE FUNCTION updOrdersFunction()
 RETURNS TRIGGER AS $$
@@ -217,20 +199,6 @@ $$ LANGUAGE plpgsql;
 --SELECT setCustomersBalance(200);
 --------------------------------------------------------------------
 
-
--- Agregar clave foránea a imdb_moviecountries
-ALTER TABLE imdb_moviecountries
-    ADD CONSTRAINT fk_moviecountries_movies FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON DELETE CASCADE;
-
--- Agregar clave foránea a imdb_moviegenres
-ALTER TABLE imdb_moviegenres
-    ADD CONSTRAINT fk_moviegenres_movies FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON DELETE CASCADE;
-
--- Agregar clave foránea a imdb_movielanguages
-ALTER TABLE imdb_movielanguages
-    ADD CONSTRAINT fk_movielanguages_movies FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON DELETE CASCADE;
-	
-	
 --SELECT * FROM orderdetail od 
 --WHERE od.orderid = 3
 
@@ -259,8 +227,6 @@ ALTER TABLE imdb_movielanguages
 --JOIN orderdetail od ON o.orderid = od.orderid
 --JOIN inventory i ON od.prod_id = i.prod_id
 --WHERE o.customerid = 2132 AND od.prod_id = 1;
-
-
 
 -- Actualizar el estado del pedido a 'Paid' para probar el trigger
 --UPDATE orders SET status = 'Paid' WHERE orderid = 27872;
