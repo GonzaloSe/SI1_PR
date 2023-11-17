@@ -10,7 +10,7 @@ def main():
 
     conection = engine.connect()
 
-    result = conection.execute(text("SELECT getTopSales(2018, 2021) AS resultado;"))
+    result = conection.execute(text("SELECT getTopSales(2018, 2021) AS resultado LIMIT 10;"))
     resultados = result.fetchall()
 
     # Imprime todos los resultados
