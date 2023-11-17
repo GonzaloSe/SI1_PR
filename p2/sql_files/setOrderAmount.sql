@@ -24,6 +24,8 @@ $$ LANGUAGE plpgsql;
 -- Llamar al procedimiento almacenado para realizar la carga inicial en la tabla 'orders'
 SELECT setOrderAmount();
 
+--DROP FUNCTION setOrderAmount;
+
 
 
 -- Crear el procedimiento almacenado setOrderAmount

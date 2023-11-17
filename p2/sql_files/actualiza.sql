@@ -4,8 +4,30 @@ ADD CONSTRAINT fk_customer FOREIGN KEY (customerid) REFERENCES customers(custome
 CREATE INDEX idx_orders_orderid ON orders(orderid);
 CREATE INDEX idx_orderdetail_orderid ON orderdetail(orderid);
 
+CREATE INDEX idx_orderdetail_prod_id ON orderdetail (orderid, prod_id);
+CREATE INDEX idx_products_prod_id ON products (prod_id);
 
--- Agregar una restricción UNIQUE a la columna 'username' en la tabla 'customers'
+
+-- Agregar claves foráneas en la tabla actormovies
+ALTER TABLE imdb_actormovies
+ADD CONSTRAINT fk_actormovies_actors
+FOREIGN KEY (actorid) REFERENCES imdb_actors(actorid);
+
+ALTER TABLE imdb_actormovies
+ADD CONSTRAINT fk_actormovies_movies
+FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid);
+
+-- Agregar claves foráneas en la tabla orderdetails
+ALTER TABLE orderdetail
+ADD CONSTRAINT fk_orderdetail_orders
+FOREIGN KEY (orderid) REFERENCES orders(orderid);
+
+-- Agregar claves foráneas en la tabla inventory
+ALTER TABLE inventory
+ADD CONSTRAINT fk_inventory_products
+FOREIGN KEY (prod_id) REFERENCES products(prod_id);
+
+
 -- Agregar un campo 'balance' en la tabla 'customers'
 -- Aumentar el tamaño del campo 'password' en la tabla 'customers'
 ALTER TABLE customers
@@ -24,29 +46,12 @@ CREATE TABLE ratings (
 
 -- Agregar dos campos a la tabla 'imdb_movies' para contener la valoración media y el número de valoraciones
 ALTER TABLE imdb_movies
-ADD ratingmean NUMERIC(3, 2), -- Ajusta el tipo y la precisión según tus necesidades
+ADD ratingmean NUMERIC(3, 2), 
 ADD ratingcount INTEGER;
 
 
 
 -------------------------------------------------TRIGGERS--------------------------------------------------------------------
--- Crear un trigger para actualizar el saldo del cliente cuando se inserta una nueva orden
-CREATE OR REPLACE FUNCTION update_balance_on_order_insert()
-RETURNS TRIGGER AS $$
-BEGIN
-  -- Lógica para actualizar el saldo, por ejemplo, deducir el costo de la orden
-  UPDATE customers
-  SET balance = balance - NEW.totalamount
-  WHERE customerid = NEW.customerid;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER update_balance_trigger
-AFTER INSERT ON orders
-FOR EACH ROW
-EXECUTE FUNCTION update_balance_on_order_insert();
-
 -- Crear un trigger para calcular y actualizar la valoración media de una película cuando se inserta una nueva valoración
 CREATE OR REPLACE FUNCTION update_ratingmean_on_rating_insert()
 RETURNS TRIGGER AS $$
@@ -71,17 +76,17 @@ RETURNS TRIGGER AS $$
 BEGIN
   IF (TG_OP = 'UPDATE') THEN 
 	  UPDATE orders
-	  SET netamount = netamount + (NEW.price * (NEW.quantity - OLD.quantitity)), totalamount = netamount * 1.1
+	  SET netamount = netamount + (NEW.price * (NEW.quantity - OLD.quantity)), totalamount = netamount *(1 + (tax / 100))
 	  WHERE orderid = OLD.orderid;
 	  RETURN NEW;
   ELSIF (TG_OP = 'INSERT') THEN 
 	  UPDATE orders
-	  SET netamount = netamount + (NEW.price * NEW.quantity), totalamount = netamount * 1.1
+	  SET netamount = netamount + (NEW.price * NEW.quantity), totalamount = netamount *(1 + (tax / 100))
 	  WHERE orderid = OLD.orderid;
 	  RETURN NEW;
   ELSIF (TG_OP = 'DELETE') THEN 
 	  UPDATE orders
-	  SET netamount = netamount - (OLD.price * OLD.quantity), totalamount = netamount * 1.1
+	  SET netamount = netamount - (OLD.price * OLD.quantity), totalamount = netamount *(1 + (tax / 100))
 	  WHERE orderid = OLD.orderid;
 	  RETURN OLD;
   END IF;
@@ -207,23 +212,23 @@ $$ LANGUAGE plpgsql;
 
 --DROP FUNCTION addRating;
 
-
+--EJERCICIO NO BORRAR-----------------------------------------------
 -- Llamar al procedimiento para inicializar el campo 'balance' de 'customers' con un número aleatorio entre 0 y 200
 --SELECT setCustomersBalance(200);
-
+--------------------------------------------------------------------
 
 
 -- Agregar clave foránea a imdb_moviecountries
 ALTER TABLE imdb_moviecountries
-    ADD FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_moviecountries_movies FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON DELETE CASCADE;
 
 -- Agregar clave foránea a imdb_moviegenres
 ALTER TABLE imdb_moviegenres
-    ADD FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_moviegenres_movies FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON DELETE CASCADE;
 
 -- Agregar clave foránea a imdb_movielanguages
 ALTER TABLE imdb_movielanguages
-    ADD FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_movielanguages_movies FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid) ON DELETE CASCADE;
 	
 	
 --SELECT * FROM orderdetail od 
