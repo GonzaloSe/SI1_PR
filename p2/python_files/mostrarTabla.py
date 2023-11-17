@@ -10,15 +10,12 @@ def main():
 
     conection = engine.connect()
 
-    function = func.getTopSales(2022,2023)
-    
-    result = conection.execute(text(f"SELECT {function} AS resultado;"))
+    result = conection.execute(text("SELECT getTopSales(2018, 2021) AS resultado;"))
+    resultados = result.fetchall()
 
-    # Recupera el resultado
-    resultado_final = result.scalar()
-
-    # Imprime el resultado (o haz lo que necesites con él)
-    print(resultado_final)
+    # Imprime todos los resultados
+    for resultado in resultados:
+        print(resultado)
 
     conection.close()
     engine.dispose()
