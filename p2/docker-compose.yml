@@ -11,6 +11,6 @@ services:
       - "127.0.0.1:5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./dump_p2_v1.sql.gz:/docker-entrypoint-initdb.d/1_data.sql.gz
+      - ./dump_p2_v2.sql.gz:/docker-entrypoint-initdb.d/1_data.sql.gz
 volumes:
   db-data:
