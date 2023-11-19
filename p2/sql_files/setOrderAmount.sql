@@ -25,28 +25,3 @@ $$ LANGUAGE plpgsql;
 SELECT setOrderAmount();
 
 --DROP FUNCTION setOrderAmount;
-
-
-
--- Crear el procedimiento almacenado setOrderAmount
-CREATE OR REPLACE FUNCTION setOrderAmountNull()
-RETURNS VOID AS $$
-BEGIN
-    -- Actualizar las columnas netamount y totalamount en la tabla orders cuando estén en blanco
-    UPDATE orders AS o
-    SET netamount = null 
-	WHERE netamount is not NULL;
-	
-	UPDATE orders as o
-    SET totalamount = null
-	WHERE totalamount is not NULL;
-
-END;
-$$ LANGUAGE plpgsql;
-
-
--- Llamar al procedimiento almacenado para realizar la carga inicial en la tabla 'orders'
-SELECT setOrderAmountNull();
-
-
---DROP FUNCTION setOrderAmountNull;
