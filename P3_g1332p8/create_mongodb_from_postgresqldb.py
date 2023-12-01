@@ -1,6 +1,7 @@
 import os
 import sys, traceback, time
 
+from datetime import datetime, date
 
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
@@ -18,6 +19,7 @@ mongodb_host = 'localhost'
 mongodb_port = 27017
 mongodb_database = 'si1'
 mongodb_collection = 'france'
+
 
 def create_mongodb_from_postgres():
     # Conexión a PostgreSQL
@@ -45,6 +47,12 @@ def create_mongodb_from_postgres():
         for record in records:
             print(f'Insertando registro {record}...')
             document = record._asdict()
+
+            # Convertir datetime.date a datetime.datetime
+            for key, value in document.items():
+               if isinstance(value, date):
+                     document[key] = datetime(value.year, value.month, value.day)
+
             mongodb_col.insert_one(document)
 
     # Cerrar conexiones
@@ -52,4 +60,9 @@ def create_mongodb_from_postgres():
     mongodb_client.close()
 
 if __name__ == "__main__":
-    create_mongodb_from_postgres()
+   mongodb_client = MongoClient(mongodb_host, mongodb_port)
+   mongodb_db = mongodb_client[mongodb_database]
+   mongodb_col = mongodb_db[mongodb_collection]
+   mongodb_col.drop()
+   mongodb_client.close()
+   create_mongodb_from_postgres()
