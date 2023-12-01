@@ -1,0 +1,47 @@
+version: '3.4'
+services:
+  pg:
+    image: postgres:14.8
+    restart: on-failure
+    environment:
+      - POSTGRES_PASSWORD=alumnodb
+      - POSTGRES_DB=si1
+      - POSTGRES_USER=alumnodb
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ./dump_v1.6-P3.sql.gz:/docker-entrypoint-initdb.d/1_data.sql.gz
+  mongo:
+    image: mongo
+    restart: on-failure
+    ports:
+      - 27017:27017
+  mongo-express:
+    # interfaz web mongo en localhost:8081  usuario:clave por defecto = admin:pass
+    image: mongo-express
+    restart: on-failure
+    ports:
+      - 8081:8081
+    depends_on:
+      - mongo
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/si1
+  redis:
+    image: redis/redis-stack
+    restart: on-failure
+    ports:
+      - 6379:6379
+      - 8001:8001  # incluye cliente redis-insight
+  neo4j:
+    image: neo4j
+    restart: on-failure
+    ports:
+      - 7474:7474 #Para conectar desde el browser
+      - 7687:7687 #Acceso al API
+    volumes:
+      - .:/local
+    environment:
+      - NEO4J_AUTH=neo4j/si1-password   #usuario/password
+    # Podemos ejecutar cypher-shell con :  docker compose run cypher-shell
+    # Los archivos locales estarán en el directorio /local
+

@@ -1,0 +1,123 @@
+-- Agregar una clave foránea a la tabla 'orders' que referencia la tabla 'customers' y configurarla para actualizar en cascada
+ALTER TABLE orders
+ADD CONSTRAINT fk_customer FOREIGN KEY (customerid) REFERENCES customers(customerid) ON DELETE CASCADE;
+CREATE INDEX idx_orders_orderid ON orders(orderid);
+CREATE INDEX idx_orderdetail_orderid ON orderdetail(orderid);
+
+CREATE INDEX idx_orderdetail_prod_id ON orderdetail (orderid, prod_id);
+CREATE INDEX idx_products_prod_id ON products (prod_id);
+
+
+-- Agregar claves foráneas en la tabla actormovies
+ALTER TABLE imdb_actormovies
+ADD CONSTRAINT fk_actormovies_actors
+FOREIGN KEY (actorid) REFERENCES imdb_actors(actorid);
+
+ALTER TABLE imdb_actormovies
+ADD CONSTRAINT fk_actormovies_movies
+FOREIGN KEY (movieid) REFERENCES imdb_movies(movieid);
+
+-- Agregar claves foráneas en la tabla orderdetails
+ALTER TABLE orderdetail
+ADD CONSTRAINT fk_orderdetail_orders
+FOREIGN KEY (orderid) REFERENCES orders(orderid);
+
+-- Agregar claves foráneas en la tabla inventory
+ALTER TABLE inventory
+ADD CONSTRAINT fk_inventory_products
+FOREIGN KEY (prod_id) REFERENCES products(prod_id);
+
+
+-- Agregar un campo 'balance' en la tabla 'customers'
+-- Aumentar el tamaño del campo 'password' en la tabla 'customers'
+ALTER TABLE customers
+ADD balance NUMERIC(10, 2), 
+ALTER COLUMN password TYPE VARCHAR(96); 
+
+-- Crear una nueva tabla 'ratings' para guardar las valoraciones
+CREATE TABLE ratings (
+  rating_id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES customers(customerid),
+  movie_id INTEGER REFERENCES imdb_movies(movieid),
+  rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+  UNIQUE (user_id, movie_id) -- Evita que un usuario valore la misma película dos veces
+);
+
+
+-- Agregar dos campos a la tabla 'imdb_movies' para contener la valoración media y el número de valoraciones
+ALTER TABLE imdb_movies
+ADD ratingmean NUMERIC(3, 2), 
+ADD ratingcount INTEGER;
+
+-------------------------------------------------PROCEDIMIENTOS--------------------------------------------------------------------
+-- Crear un procedimiento para inicializar el campo 'balance' de 'customers' con un valor aleatorio
+CREATE OR REPLACE FUNCTION setCustomersBalance(IN initialBalance bigint)
+RETURNS VOID AS $$
+DECLARE
+    randomBalance bigint;
+BEGIN
+    -- Generar un número aleatorio entre 0 y N (en este caso, N = 200)
+    randomBalance := floor(random() * (initialBalance + 1));
+    
+    -- Actualizar el campo 'balance' para todos los registros en la tabla 'customers' con el valor aleatorio
+    UPDATE customers
+    SET balance = randomBalance;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+-- Crear un procedimiento para añadir una valoración a una película
+CREATE OR REPLACE FUNCTION addRating(IN r_rating integer, IN r_movie_id integer, IN r_user_id integer)
+RETURNS VOID AS $$
+BEGIN
+    INSERT INTO ratings (rating, movie_id, user_id) VALUES (r_rating, r_movie_id, r_user_id);
+END;
+$$ LANGUAGE plpgsql;
+
+------------------------------------PRUEBAS----------------------------------------------------------
+--SELECT addRating(3, 103, 4);
+--DELETE FROM ratings WHERE movie_id = 103 AND user_id = 4;
+
+
+--DROP FUNCTION addRating;
+
+--EJERCICIO NO BORRAR-----------------------------------------------
+-- Llamar al procedimiento para inicializar el campo 'balance' de 'customers' con un número aleatorio entre 0 y 200
+--SELECT setCustomersBalance(200);
+--------------------------------------------------------------------
+
+--SELECT * FROM orderdetail od 
+--WHERE od.orderid = 3
+
+--SELECT orderid, SUM(price) FROM orderdetail od 
+--WHERE od.orderid = 3
+--GROUP BY orderid
+
+--DELETE FROM orderdetail od
+--WHERE od.prod_id=1467 AND od.orderid = 3
+--1766
+
+  
+  
+  
+-- Ver el estado antes de la actualización
+--SELECT * FROM inventory WHERE prod_id=1;
+--SELECT * FROM customers WHERE customerid = 2132;
+--UPDATE customers SET balance = 300 WHERE customerid = 2132;
+
+--SELECT *
+--FROM orders
+--WHERE orderid IN (SELECT orderid FROM orderdetail WHERE prod_id = 1);
+
+--SELECT *
+--FROM orders o
+--JOIN orderdetail od ON o.orderid = od.orderid
+--JOIN inventory i ON od.prod_id = i.prod_id
+--WHERE o.customerid = 2132 AND od.prod_id = 1;
+
+-- Actualizar el estado del pedido a 'Paid' para probar el trigger
+--UPDATE orders SET status = 'Paid' WHERE orderid = 27872;
+
+
+
