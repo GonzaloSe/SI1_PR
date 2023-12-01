@@ -3,6 +3,8 @@ import sys, traceback, time
 
 from datetime import datetime, date
 
+from decimal import Decimal
+
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
 from pymongo import MongoClient
@@ -52,6 +54,9 @@ def create_mongodb_from_postgres():
             for key, value in document.items():
                if isinstance(value, date):
                      document[key] = datetime(value.year, value.month, value.day)
+               if isinstance(value, Decimal):
+                     document[key] = float(value)
+               
 
             mongodb_col.insert_one(document)
 
