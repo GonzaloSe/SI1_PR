@@ -11,6 +11,16 @@ services:
       - "127.0.0.1:5432:5432"
     volumes:
       - ./dump_v1.6-P3.sql.gz:/docker-entrypoint-initdb.d/1_data.sql.gz
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: on-failure
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=alumnodb@si1.com
+      - PGADMIN_DEFAULT_PASSWORD=alumnodb
+    depends_on:
+      - pg
+    ports:
+      - "127.0.0.1:8080:80"
   mongo:
     image: mongo
     restart: on-failure
@@ -44,4 +54,3 @@ services:
       - NEO4J_AUTH=neo4j/si1-password   #usuario/password
     # Podemos ejecutar cypher-shell con :  docker compose run cypher-shell
     # Los archivos locales estarán en el directorio /local
-
