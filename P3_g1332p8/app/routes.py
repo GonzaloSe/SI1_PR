@@ -33,3 +33,16 @@ def topUK():
     # TODO: consultas a MongoDB ...
     movies=[[],[],[]]
     return render_template('topUK.html', movies=movies)
+
+@app.route('/borraCiudad', methods=['POST','GET'])
+def borraCiudad():
+    if 'city' in request.form:
+        city    = request.form["city"]
+        bSQL    = request.form["txnSQL"]
+        bCommit = "bCommit" in request.form
+        bFallo  = "bFallo"  in request.form
+        duerme  = request.form["duerme"]
+        dbr = database.delCity(city, bFallo, bSQL=='1', int(duerme), bCommit)
+        return render_template('borraCiudad.html', dbr=dbr)
+    else:
+        return render_template('borraCiudad.html')

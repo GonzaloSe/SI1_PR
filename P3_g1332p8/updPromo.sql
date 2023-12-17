@@ -37,7 +37,6 @@ EXECUTE FUNCTION trg_UpdatePromo_Discount();
 
 
 
---NO SE DONDE VA ESTA MIERDA
 -- Modificar la lógica de eliminación con una pausa
 CREATE OR REPLACE FUNCTION deleteCity(city_id INT)
 RETURNS VOID AS $$
