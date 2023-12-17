@@ -5,27 +5,29 @@ ADD COLUMN IF NOT EXISTS promo DECIMAL(5, 2);
 
 
 
--- Modificar el trigger trg_UpdatePromo_Discount para incluir una pausa (sleep)
+-- Crear el trigger para aplicar descuento en los artículos al alterar la columna "promo"
 CREATE OR REPLACE FUNCTION trg_UpdatePromo_Discount()
 RETURNS TRIGGER AS $$
 BEGIN
     -- Verificar si la columna "promo" ha cambiado
     IF NEW.promo <> OLD.promo THEN
-        -- Agregar una pausa de 5 segundos 
+        -- Realizar una pausa de 5 segundos
         PERFORM pg_sleep(5);
 
-        UPDATE orderdetail
-        SET total_amount = p.price * (1 - (NEW.promo / 100))
-        FROM orders o
-        JOIN products p ON o.product_id = p.product_id
-        WHERE o.customer_id = NEW.customer_id;
+        -- Actualizar el descuento en los productos de las órdenes
+        UPDATE products
+        SET price = price * (1 - (NEW.promo / 100))
+        FROM orderdetails od
+        WHERE products.product_id = od.product_id
+          AND od.order_id IN (SELECT order_id FROM orders WHERE customer_id = NEW.customer_id);
 
-        RAISE NOTICE 'Descuento aplicado correctamente en la orden para el cliente %.', NEW.customer_id;
+        RAISE NOTICE 'Descuento aplicado correctamente en los productos de las órdenes para el cliente %.', NEW.customer_id;
     END IF;
 
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
 
 -- Vincular el trigger a la tabla "customers"
 CREATE TRIGGER trg_UpdatePromo_Discount
@@ -37,6 +39,7 @@ EXECUTE FUNCTION trg_UpdatePromo_Discount();
 
 
 
+--NO SE DONDE VA ESTA MIERDA
 -- Modificar la lógica de eliminación con una pausa
 CREATE OR REPLACE FUNCTION deleteCity(city_id INT)
 RETURNS VOID AS $$
