@@ -45,40 +45,30 @@ def main():
     # Imprime todos los resultados
     for movieid, title, _ in resultados:
         with neo4j_conection.session() as session:
-            # Verificar si el nodo de la película ya existe
-            existing_movie_query = "MATCH (m:Movie {id: $id}) RETURN m"
-            existing_movie_result = session.execute_read(lambda tx: tx.run(existing_movie_query, id=movieid))
-
-            if not existing_movie_result.single():
-                node_data = {
-                    "id": movieid,
-                    "title": title,
-                }
-                # Crear el nodo en la base de datos
-                result = session.execute_write(lambda tx: tx.run(
-                    "CREATE (node:Movie {id: $id, title: $title}) RETURN node",
-                    **node_data
-                ))
+            node_data = {
+                "id": movieid,
+                "title": title,
+            }
+            # Crear el nodo en la base de datos
+            result = session.execute_write(lambda tx: tx.run(
+                "CREATE (node:Movie {id: $id, title: $title}) RETURN node",
+                **node_data
+            ))
         
         select_directors = f"SELECT d.directorid, d.directorname FROM imdb_directors AS d JOIN imdb_directormovies AS dm ON d.directorid = dm.directorid WHERE dm.movieid = {movieid};"
         result_directors = postgresql_conection.execute(text(select_directors))
         directors = result_directors.fetchall()
         for directorid, directorname in directors:
             with neo4j_conection.session() as session:
-                # Verificar si el nodo del director ya existe
-                existing_director_query = "MATCH (d:Director {id: $id}) RETURN d"
-                existing_director_result = session.execute_read(lambda tx: tx.run(existing_director_query, id=directorid))
-
-                if not existing_director_result.single():
-                    node_data = {
-                        "directorid": directorid,
-                        "name": directorname,
-                    }
-                    # Crear el nodo en la base de datos
-                    result = session.execute_write(lambda tx: tx.run(
-                        "CREATE (node:Director {directorid: $directorid, name: $name}) RETURN node",
-                        **node_data
-                    ))
+                node_data = {
+                    "directorid": directorid,
+                    "name": directorname,
+                }
+                # Crear el nodo en la base de datos
+                result = session.execute_write(lambda tx: tx.run(
+                    "CREATE (node:Director {directorid: $directorid, name: $name}) RETURN node",
+                    **node_data
+                ))
 
             with neo4j_conection.session() as session:
                 # Crear la relación entre el nodo de la película y el nodo del director
@@ -96,20 +86,15 @@ def main():
 
         for actorid, actorname in actors:
             with neo4j_conection.session() as session:
-                # Verificar si el nodo del actor ya existe
-                existing_actor_query = "MATCH (a:Actor {id: $id}) RETURN a"
-                existing_actor_result = session.execute_read(lambda tx: tx.run(existing_actor_query, id=actorid))
-
-                if not existing_actor_result.single():
-                    node_data = {
-                        "actorid": actorid,
-                        "name": actorname,
-                    }
-                    # Crear el nodo en la base de datos
-                    result = session.execute_write(lambda tx: tx.run(
-                        "CREATE (node:Actor {actorid: $actorid, name: $name}) RETURN node",
-                        **node_data
-                    ))
+                node_data = {
+                    "actorid": actorid,
+                    "name": actorname,
+                }
+                # Crear el nodo en la base de datos
+                result = session.execute_write(lambda tx: tx.run(
+                    "CREATE (node:Actor {actorid: $actorid, name: $name}) RETURN node",
+                    **node_data
+                ))
 
             with neo4j_conection.session() as session:
                 # Crear la relación entre el nodo de la película y el nodo del actor
