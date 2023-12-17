@@ -78,8 +78,7 @@ def delCity(city, bFallo, bSQL, duerme, bCommit):
         else:
             transaction = db_conn.begin()
 
-        for i, query in enumerate(queries_in_order):
-            dbr.append("Ejecutando: " + str(query))         
+        for i, query in enumerate(queries_in_order):         
             if i == 1 and bCommit:
                 if bSQL:
                     dbr.append("Ejecutando commit intermedio")
@@ -93,6 +92,7 @@ def delCity(city, bFallo, bSQL, duerme, bCommit):
             elif i == 2:
                 dbr.append(f"Duerme {str(duerme)} segundos")
                 time.sleep(float(duerme))
+            dbr.append("Ejecutando: " + str(query))
             db_conn.execute(text(query))
     except Exception as e:
         dbr.append(f"Error: {str(e)}")
