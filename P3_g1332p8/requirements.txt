@@ -1,0 +1,6 @@
+pip install redis
+pip install neo4j
+pip install pymongo
+pip install Flask
+pip install SQLAlchemy
+pip install psycopg2
