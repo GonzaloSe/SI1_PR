@@ -59,23 +59,23 @@ def main():
         directors = result_directors.fetchall()
         for directorid, directorname in directors:
             with neo4j_conection.session() as session:
-                node_data = {
+                node_data_director = {
                     "directorid": directorid,
                     "name": directorname,
                 }
                 # Crear el nodo en la base de datos
                 result = session.execute_write(lambda tx: tx.run(
                     "CREATE (node:Director {directorid: $directorid, name: $name}) RETURN node",
-                    **node_data
+                    **node_data_director
                 ))
 
-            with neo4j_conection.session() as session:
-                # Crear la relación entre el nodo de la película y el nodo del director
-                result = session.execute_write(lambda tx: tx.run(
-                    "MATCH (m:Movie {id: $movieid}), (d:Director {id: $directorid}) CREATE (m)-[r:DIRECTED]->(d) RETURN r",
-                    movieid=movieid,
-                    directorid=directorid
-                ))
+                with neo4j_conection.session() as session:
+                    # Crear la relación entre el nodo de la película y el nodo del director
+                    result = session.execute_write(lambda tx: tx.run(
+                        "MATCH (m:Movie {id: $movieid}), (d:Director {directorid: $directorid}) CREATE (m)-[r:DIRECTED_BY]->(d) RETURN r",
+                        movieid=movieid,
+                        directorid=directorid
+                    ))
 
                 
 
@@ -85,23 +85,23 @@ def main():
 
         for actorid, actorname in actors:
             with neo4j_conection.session() as session:
-                node_data = {
+                node_data_actor = {
                     "actorid": actorid,
                     "name": actorname,
                 }
                 # Crear el nodo en la base de datos
                 result = session.execute_write(lambda tx: tx.run(
                     "CREATE (node:Actor {actorid: $actorid, name: $name}) RETURN node",
-                    **node_data
+                    **node_data_actor
                 ))
 
-            with neo4j_conection.session() as session:
-                # Crear la relación entre el nodo de la película y el nodo del actor
-                result = session.execute_write(lambda tx: tx.run(
-                    "MATCH (m:Movie {id: $movieid}), (a:Actor {id: $actorid}) CREATE (m)-[r:ACTED_IN]->(a) RETURN r",
-                    movieid=movieid,
-                    actorid=actorid
-                ))
+                with neo4j_conection.session() as session:
+                    # Crear la relación entre el nodo de la película y el nodo del actor
+                    result = session.execute_write(lambda tx: tx.run(
+                        "MATCH (m:Movie {id: $movieid}), (a:Actor {actorid: $actorid}) CREATE (m)-[r:ACTED_IN]->(a) RETURN r",
+                        movieid=movieid,
+                        actorid=actorid
+                    ))
 
                              
 
