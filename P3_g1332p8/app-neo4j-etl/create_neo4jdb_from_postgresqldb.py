@@ -42,7 +42,6 @@ def main():
     result_movieid = postgresql_conection.execute(text(select_movies))
     resultados = result_movieid.fetchall()
 
-    # Imprime todos los resultados
     for movieid, title, _ in resultados:
         with neo4j_conection.session() as session:
             node_data = {
